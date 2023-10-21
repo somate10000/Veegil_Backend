@@ -61,11 +61,10 @@ exports.signup = (req, res) => {
   //console.log(req.body);
 
   const payload = {
-    email: req.body.email,
-    password: req.body.password,
-    confirmPassword: req.body.confirmPassword,
+    acc_email: req.body.email,
+    acc_nuban: nuban,
     handle: req.body.email,
-    phonenumber: req.body.phoneNumber,
+    acc_phonenumber: req.body.phoneNumber,
     acc_name: req.body.account_name,
     country: "NG",
     account_refrence: req.body.account_reference,
@@ -145,6 +144,23 @@ exports.login = (req, res) => {
       }
       return res.status(500).json({ error: error.code });
     });
+};
+
+exports.updateUserDetails = (req, res) => {
+  const acc_name = "Veegil Sunday";
+  // console.log(req.body.email);
+
+  db.collection("users")
+    .doc("Flashkid20@flash.com")
+    .update({
+      firstname: "Veegil",
+      lastname: "Sunday",
+    })
+    .then((data) => {
+      console.log(data), res.status(202).json(data);
+      // return res.status(202).json(data.data()), console.log(data.data());
+    })
+    .catch((e) => console.log(e));
 };
 
 exports.getUserDetails = (req, res) => {

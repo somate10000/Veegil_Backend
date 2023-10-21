@@ -16,6 +16,7 @@ const {
   checkForUser,
   getUserDetails,
   getUserIn,
+  updateUserDetails,
 } = require("./handlers/NewUser");
 const { sendOTP, validateOTP } = require("./handlers/otp/OTP");
 const { chargeCard, fundCard } = require("./handlers/card/chargeCard");
@@ -84,6 +85,9 @@ app.post("/api/signup", signup);
 
 // Login to User
 app.post("/api/login", login);
+
+// Login to User
+app.post("/api/update", updateUserDetails);
 
 // Get All local Banks
 app.get("/api/getallBanks", getAllBanks);
