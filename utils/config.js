@@ -1,9 +1,12 @@
+require("dotenv").config();
+
 module.exports = {
-  apiKey: "AIzaSyD4qTOiuZ14N82S_QoJY8yXxd_A-YE71Ic",
-  authDomain: "next-auth-efcff.firebaseapp.com",
-  projectId: "next-auth-efcff",
-  storageBucket: "next-auth-efcff.appspot.com",
-  messagingSenderId: "602010042639",
-  appId: "1:602010042639:web:b01e81ee0d2d090006fe7a",
-  measurementId: "G-ZD3WGFJB4K",
+  apiKey: "AIzaSyCd3kMUI4Y0dSSSjW1j4e8JpvRSeHjdPlQ",
+  authDomain: process.env.AUTHDOMAIN,
+  databaseURL: process.env.DATABASEURL,
+  projectId: process.env.PROJECTID,
+  storageBucket: process.env.STORAGEBUCKET,
+  messagingSenderId: process.env.MESSAGINGSENDERID,
+  appId: process.env.APPID,
+  measurementId: process.env.MEASUREMENTID,
 };

@@ -55,6 +55,7 @@ exports.signup = (req, res) => {
     password: req.body.password,
     confirmPassword: req.body.confirmPassword,
     handle: req.body.email,
+    phoneNumber: req.body.phoneNumber,
   };
   console.log("ddd", newUser);
   const noImg = "blank-profile-picture-973460_960_720.webp";
@@ -62,22 +63,24 @@ exports.signup = (req, res) => {
 
   const payload = {
     acc_email: req.body.email,
-    acc_nuban: nuban,
+    acc_nuban: req.body.phoneNumber,
     handle: req.body.email,
-    acc_phonenumber: req.body.phoneNumber,
-    acc_name: req.body.account_name,
+    acc_phonenumber: "+234" + req.body.phoneNumber,
+    account_name: req.body.account_name,
     country: "NG",
     account_refrence: req.body.account_reference,
     is_permanent: true,
-    bvn: "12345678901",
-    date_of_birth: "1972/05/02",
-    title: "Mr",
-    gender: "Male",
+    bvn: req.body.bvn,
+    date_of_birth: req.body.date_of_birth,
+    title: req.body.title,
+    gender: req.body.gender,
     amount: 0,
-    bank_code: "044",
+    bank_code: req.body.bank_code,
     created_on: req.body.created_on,
-    imageUrl: `https://firebasestorage.googleapis.com/v0/b/${config.storageBucket}/o/${noImg}?alt=media`,
+    imageUrl: req.body.imageUrl,
   };
+
+  const data = [payload];
 
   const { valid, errors } = validateSignupData(newUser);
   if (!valid) return res.status(400).json(errors);
@@ -85,21 +88,62 @@ exports.signup = (req, res) => {
 
   if (valid) {
     console.log("Valid");
-    Auth.createUserWithEmailAndPassword(auth, payload.email, payload.password)
-      .then((data) => {
-        return db.doc(`/users/${newUser.handle}`).set(payload), res.json(data);
+
+    const User = admin.auth();
+
+    User.createUser({
+      email: req.body.email,
+      emailVerified: false,
+      phoneNumber: "+234" + req.body.phoneNumber,
+      password: req.body.password,
+      displayName: req.body.account_name,
+      photoURL: "http://www.example.com/12345678/photo.png",
+      disabled: false,
+    })
+
+      .then(async (userRecord) => {
+        // See the UserRecord reference doc for the contents of userRecord.
+        console.log("Successfully created new user:", userRecord);
+        await User.createCustomToken(userRecord.uid).then((token) => {
+          db.doc(`/users/${newUser.handle}`).set(payload);
+
+          return res.json(token);
+          // const enc = [payload].push({ jwt_token: jwt }),
+          // return res.json(enc), console.log(enc)
+        });
       })
       .catch((error) => {
         console.log(error);
         if (error.code === "auth/email-already-in-use") {
           return res.status(403).json({ general: "Email already in use" });
+        }
+
+        if (error.code === "auth/network-request-failed") {
+          return res
+            .status(404)
+            .json({ general: "Network Error, Try Again!!" });
         } else {
           return res
             .status(403)
             .json({ general: "something went wrong try again" });
         }
+        // return res.status(500).json({ error: error.code });
       });
-    console.log("Hama");
+    // Auth.createUserWithEmailAndPassword(auth, payload.email, payload.password)
+    //   .then((data) => {
+    //     return db.doc(`/users/${newUser.handle}`).set(payload), res.json(data);
+    //   })
+    //   .catch((error) => {
+    //     console.log(error);
+    //     if (error.code === "auth/email-already-in-use") {
+    //       return res.status(403).json({ general: "Email already in use" });
+    //     } else {
+    //       return res
+    //         .status(403)
+    //         .json({ general: "something went wrong try again" });
+    //     }
+    //   });
+    // console.log("Hama");
   } else {
     return res.status(400).json(errors);
   }
@@ -151,10 +195,9 @@ exports.updateUserDetails = (req, res) => {
   // console.log(req.body.email);
 
   db.collection("users")
-    .doc("Flashkid20@flash.com")
+    .doc(req.body.email)
     .update({
-      firstname: "Veegil",
-      lastname: "Sunday",
+      amount: req.body.newAmount,
     })
     .then((data) => {
       console.log(data), res.status(202).json(data);
@@ -170,7 +213,7 @@ exports.getUserDetails = (req, res) => {
     .doc(req.body.email.trim())
     .get()
     .then((data) => {
-      return res.status(202).json(data.data()), console.log(data.data());
+      return res.status(202).json(data.data()), console.log("ddd", data.data());
     })
     .catch((e) => console.log(e));
 };

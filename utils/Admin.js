@@ -6,7 +6,8 @@ const serviceAccount = require("../firebase.json");
 if (!admin.apps.length) {
   admin.initializeApp({
     credential: admin.credential.cert(serviceAccount),
-    databaseURL: "https://next-auth-efcff.firebaseio.com",
+    databaseURL:
+      "https://cash-282015-default-rtdb.europe-west1.firebasedatabase.app",
   });
 }
 

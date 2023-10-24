@@ -1,4 +1,4 @@
-const { flw } = require("../../utils/flw");
+const { flw } = require("../utils/flw");
 
 exports.getAllBanks = (req, res) => {
   const payload = {
